@@ -48,7 +48,7 @@ impl GrammarDecoder<RePairResult> for NavarroRepairDecoder {
         // The rule vector
         let mut rules = vec![];
 
-        while let Some(_) = chars.peek() {
+        while chars.peek().is_some() {
             let mut l = read_int!(chars);
             let mut r = read_int!(chars);
 
@@ -68,7 +68,7 @@ impl GrammarDecoder<RePairResult> for NavarroRepairDecoder {
 
         let mut chars = file_c.into_iter().peekable();
         let mut rule_vec = vec![];
-        while let Some(_) = chars.peek() {
+        while chars.peek().is_some() {
             let symb = read_int!(chars);
             rule_vec.push(if symb < alph_n {
                 alph[symb] as usize

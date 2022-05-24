@@ -125,7 +125,7 @@ impl Grammar {
                 if Grammar::is_terminal(symbol) {
                     rule_exp.push(symbol as u8 as char)
                 } else {
-                    rule_exp.extend(expansions[symbol - RULE_OFFSET].chars())
+                    rule_exp.push_str(expansions[symbol - RULE_OFFSET].as_str())
                 }
             }
             expansions.push(rule_exp)
