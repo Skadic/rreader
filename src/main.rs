@@ -32,7 +32,7 @@ fn main() -> Result<(), RReaderError> {
         // out is required when decompressing
         let out_file = std::fs::File::create(args.out.unwrap())?;        
         let grammar = GrammarTupleCoder::decode(file)?;
-        grammar.write(out_file)? 
+        grammar.write_source_string(out_file)? 
     }
 
     Ok(())

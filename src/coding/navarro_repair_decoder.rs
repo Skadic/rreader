@@ -97,3 +97,52 @@ fn alphabet(
     }
     Ok(vec)
 }
+
+
+#[cfg(test)]
+mod test {
+    use std::io::Write;
+
+    use crate::{coding::grammar_coder::GrammarDecoder, grammar::Grammar};
+
+    use super::NavarroRepairDecoder;
+
+
+    #[test]
+    fn navarro_decode_test() {
+        // alphabet: a c e g
+        let mut r_bytes = vec![4u8, 0, 0, 0, 97, 99, 101, 103];
+        r_bytes.write(&[0, 0, 0, 0]).unwrap(); // a
+        r_bytes.write(&[1, 0, 0, 0]).unwrap(); // c
+        
+        r_bytes.write(&[4, 0, 0, 0]).unwrap(); // ac 
+        r_bytes.write(&[2, 0, 0, 0]).unwrap(); // e
+        
+        r_bytes.write(&[3, 0, 0, 0]).unwrap(); // g
+        r_bytes.write(&[0, 0, 0, 0]).unwrap(); // a
+        
+        r_bytes.write(&[5, 0, 0, 0]).unwrap(); // ace
+        r_bytes.write(&[6, 0, 0, 0]).unwrap(); // ga
+        
+        let mut c_bytes: Vec<u8> = vec![];
+        c_bytes.write(&[5, 0, 0, 0]).unwrap(); // ace
+        c_bytes.write(&[7, 0, 0, 0]).unwrap(); // acega
+        c_bytes.write(&[1, 0, 0, 0]).unwrap(); // c
+        c_bytes.write(&[6, 0, 0, 0]).unwrap(); // ga
+        
+        let gr = NavarroRepairDecoder::decode(super::RePairResult { file_c: c_bytes, file_r: r_bytes });
+        assert!(gr.is_ok(), "Error decoding grammar");
+        let gr = gr.unwrap();
+
+        assert_eq!(&Grammar::from_parts(vec![
+            vec![97, 99],
+            vec![256, 101],
+            vec![103, 97],
+            vec![257, 258],
+            vec![257, 259, 99, 258]
+        ], 4), &gr, "Grammar decoded incorrectly");
+
+        let s = gr.produce_source_string();
+        assert_eq!(Ok("aceacegacga".to_owned()), s, "Grammar producing the wrong string");
+    }
+}

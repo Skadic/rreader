@@ -99,3 +99,41 @@ where
         Ok(Grammar::from_parts(rules, rule_count - 1))
     }
 }
+
+
+#[cfg(test)]
+mod test {
+    use crate::{grammar::Grammar, coding::grammar_coder::{GrammarEncoder, GrammarDecoder}};
+
+    use super::GrammarTupleCoder;
+
+    fn setup() -> Grammar {
+        Grammar::from_parts(
+            vec![
+                vec![257, 258, 100],
+                vec![97, 98, 99],
+                vec![100, 101, 259],
+                vec![102, 103, 104, 257],
+            ],
+            0,
+        )
+    }
+
+    #[test]
+    fn coding_decoding_test() {
+        let mut gr = setup();
+        let mut buf = vec![];
+
+        let encoded = GrammarTupleCoder::encode(gr.clone(), &mut buf);  
+        assert!(encoded.is_ok(), "Error during encoding: {:?}", encoded);
+
+        let decoded = GrammarTupleCoder::decode(buf.as_slice());
+        assert!(decoded.is_ok(), "Error during decoding: {:?}", encoded);
+
+        let decoded = decoded.unwrap();
+
+        // The read grammar will be renumbered as it is required by the coder
+        gr.renumber();
+        assert_eq!(gr, decoded, "Resulting grammar differs from original grammar");
+    }
+}
