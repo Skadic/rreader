@@ -12,11 +12,33 @@ This uses Gonzalo Navarro's implementation of the RePair algorithm which can be 
 
 ## Usage
 
-If a file `example.txt` should be compressed,
-either run the project with `cargo run -- example.txt` or run the binary `./rreader example.txt`.
-A file called `example.txt.grm` will be created containing the (somewhat) compressed text.
+Help can be displayed by running the project with the `--help` flag.
 
-Decompression is WIP.
+```
+rreader 0.1.0
+
+USAGE:
+    rreader [OPTIONS] --file <FILE>
+
+OPTIONS:
+    -d, --decompress     Decompress the input file
+    -f, --file <FILE>    The input file
+    -h, --help           Print help information
+    -o, --out <OUT>      The output file
+    -V, --version        Print version information
+```
+
+### Compression
+
+If a file `example.txt` should be compressed,
+either run the project with `cargo run -- -f example.txt` or run the binary `./rreader -f example.txt`.
+A file called `example.txt.grm` (default output name just appends `.grm`) will be created containing the (somewhat) compressed text.
+
+### Decompression
+
+Decompression can be done by using the `-d` flag.
+Note that specifying the output file name (`-o`) is required when decompressing.
+Either run the project with `cargo run -- -d -f compressed_example.txt -o decompressed.txt` or run the binary `./rreader -d -f compressed_example.txt -o decompressed.txt`.
 
 ## File format
 
