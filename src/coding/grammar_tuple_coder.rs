@@ -1,6 +1,6 @@
 use std::io::Read;
 
-use bitstream_io::{BitWrite, BitWriter, LittleEndian, Numeric, BitReader, BitRead};
+use bitstream_io::{BitWrite, BitWriter, LittleEndian, BitReader, BitRead};
 
 use crate::grammar::{self, Grammar};
 

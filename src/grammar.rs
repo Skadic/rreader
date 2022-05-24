@@ -58,17 +58,12 @@ impl Grammar {
         let mut renumbering = vec![usize::MAX; self.rule_count()];
         let mut cnt = 0;
 
-        self.print();
-
         self.renumber_internal(self.start_rule, &mut renumbering, &mut cnt);
 
         let rule_count = self.rule_count();
 
         // Take out the old rules and replace them with a new vector
         let old_rules = std::mem::replace(&mut self.rules, vec![vec![]; rule_count]);
-
-        println!("{}", self.start_rule);
-        println!("{:?}", renumbering);
 
         // Renumber the symbols in each rule and insert them into the appropriate place
         for (i, mut rule) in old_rules.into_iter().enumerate() {

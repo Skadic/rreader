@@ -26,11 +26,19 @@ macro_rules! read_int {
 #[derive(Debug, Default, Clone, Copy)]
 pub struct NavarroRepairDecoder;
 
-impl GrammarDecoder<(String, String)> for NavarroRepairDecoder {
+pub struct RePairResult {
+    pub file_c: Vec<u8>,
+    pub file_r: Vec<u8>
+}
+
+impl GrammarDecoder<RePairResult> for NavarroRepairDecoder {
     type DecodeErr = RReaderError;
 
-    fn decode((file_r, file_c): (String, String)) -> Result<Grammar, Self::DecodeErr> {
-        let mut chars = file_r.bytes().peekable();
+    fn decode(res: RePairResult) -> Result<Grammar, Self::DecodeErr> {
+        let file_r = res.file_r;
+        let file_c = res.file_c;
+
+        let mut chars = file_r.into_iter().peekable();
 
         // Read alphabet size
         let alph_n = read_int!(chars);
@@ -58,7 +66,7 @@ impl GrammarDecoder<(String, String)> for NavarroRepairDecoder {
             rules.push(vec![l, r]);
         }
 
-        let mut chars = file_c.bytes().peekable();
+        let mut chars = file_c.into_iter().peekable();
         let mut rule_vec = vec![];
         while let Some(_) = chars.peek() {
             let symb = read_int!(chars);
