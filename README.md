@@ -1,3 +1,4 @@
+[![Rust](https://github.com/Skadic/rreader/actions/workflows/rust.yml/badge.svg)](https://github.com/Skadic/rreader/actions/workflows/rust.yml)
 # rreader
 
 Compressing text with RePair and outputting them in a different format.
