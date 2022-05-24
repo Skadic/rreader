@@ -1,4 +1,7 @@
-use std::ops::Index;
+use std::{
+    io::Write,
+    ops::Index,
+};
 
 pub const RULE_OFFSET: usize = 256;
 
@@ -93,6 +96,50 @@ impl Grammar {
                 .join(" ");
             println!("R{i} -> {rule_str}")
         }
+    }
+
+    pub fn reproduce(self) -> Result<String, std::string::FromUtf8Error> {
+        let mut vec = Vec::<u8>::new();
+        // We're writing to a string. This shouldn't fail
+        self.write(&mut vec)
+            .expect("Writing grammar expansion to string failed");
+        String::from_utf8(vec)
+    }
+
+    pub fn write(mut self, mut out: impl Write) -> std::io::Result<()> {
+        if self.rule_count() == 0 {
+            return Ok(());
+        }
+
+        self.renumber();
+
+        let rule_count = self.rule_count();
+        let mut expansions = Vec::<String>::with_capacity(rule_count);
+
+        // There should always be a start rule
+        let start_rule = self.rules.pop().unwrap();
+
+        for rule in self.rules.into_iter() {
+            let mut rule_exp = String::with_capacity(rule.len());
+            for symbol in rule {
+                if Grammar::is_terminal(symbol) {
+                    rule_exp.push(symbol as u8 as char)
+                } else {
+                    rule_exp.extend(expansions[symbol - RULE_OFFSET].chars())
+                }
+            }
+            expansions.push(rule_exp)
+        }
+
+        for symbol in start_rule {
+            if Grammar::is_terminal(symbol) {
+                out.write_all(&[symbol as u8])?;
+            } else {
+                out.write_all(expansions[symbol - RULE_OFFSET].as_bytes())?;
+            }
+        }
+
+        Ok(())
     }
 }
 

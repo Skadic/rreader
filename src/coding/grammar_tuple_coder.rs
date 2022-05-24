@@ -62,10 +62,18 @@ where
 
     fn decode(input: I) -> Result<Grammar, Self::DecodeErr> {
         let mut bit_reader = BitReader::endian(input, LittleEndian);
+    
+        let mut buf32 = [0u8; 4];
+        let mut buf8 = [0u8];
+
         macro_rules! rd {
-            ($t:ty) => {{ 
-                const TYPE_SIZE: usize = std::mem::size_of::<$t>();
-                bit_reader.read_to_bytes::<TYPE_SIZE>().map(|bytes| <$t>::from_le_bytes(bytes))? as usize 
+            (u32) => {{ 
+                bit_reader.read_bytes(&mut buf32)?;
+                u32::from_le_bytes(buf32) as usize
+            }};
+            (u8) => {{ 
+                bit_reader.read_bytes(&mut buf8)?;
+                buf8[0] as usize
             }};
         }
 
