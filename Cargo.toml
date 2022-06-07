@@ -1,7 +1,9 @@
 [package]
 name = "rreader"
+authors = ["Etienne Palanga <e.palanga@disroot.org>"]
 version = "0.1.0"
 edition = "2021"
+description = "A rust wrapper around Gonzalo Navarro's RePair implementation to save grammars in a different format."
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
