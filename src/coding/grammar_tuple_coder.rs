@@ -1,6 +1,6 @@
 use std::io::Read;
 
-use bitstream_io::{BitWrite, BitWriter, LittleEndian, BitReader, BitRead, BigEndian};
+use bitstream_io::{BitWrite, BitWriter, BitReader, BitRead, BigEndian};
 
 use crate::grammar::{self, Grammar};
 
@@ -33,8 +33,8 @@ impl GrammarEncoder for GrammarTupleCoder {
 
         for rule in rules {
             // Write the rule length to the output
-            let rule_size = rule.len() as u32 - min_len;
-            bit_writer.write_bytes(&u32::to_be_bytes(rule_size))?;
+            let encoded_rule_size = rule.len() as u32 - min_len;
+            bit_writer.write_bytes(&u32::to_be_bytes(encoded_rule_size))?;
 
             for symbol in rule {
                 if Grammar::is_terminal(symbol) {
@@ -100,6 +100,7 @@ where
                 };
                 rule.push(symbol);
             } 
+            rule.shrink_to_fit();
             rules.push(rule);
         }
 
