@@ -26,13 +26,13 @@ fn main() -> Result<(), RReaderError> {
         let out_file_name = args.out.unwrap_or(format!("{}.grm", &args.file));
         let out_file = std::fs::File::create(out_file_name)?;
 
-        GrammarTupleCoder::encode(grammar, out_file)?;
+        GrammarTupleCoder::encode(grammar, out_file)?
     } else {
         let file = std::fs::File::open(&args.file)?;
         // out is required when decompressing
-        let out_file = std::fs::File::create(args.out.unwrap())?;        
+        let out_file = std::fs::File::create(args.out.unwrap())?;
         let grammar = GrammarTupleCoder::decode(file)?;
-        grammar.write_source_string(out_file)? 
+        grammar.write_source_string(out_file)?
     }
 
     Ok(())

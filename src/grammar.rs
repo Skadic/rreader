@@ -141,6 +141,14 @@ impl Grammar {
 
         Ok(())
     }
+
+    pub fn rules(&self) -> &Vec<Vec<usize>> {
+        &self.rules
+    }
+
+    pub fn iter(&self) -> std::slice::Iter<Vec<usize>> {
+        self.rules.iter()
+    }
 }
 
 impl Index<usize> for Grammar {
