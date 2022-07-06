@@ -113,33 +113,19 @@ impl Grammar {
 
         self.renumber();
 
-        let rule_count = self.rule_count();
-        let mut expansions = Vec::<String>::with_capacity(rule_count);
-
-        // There should always be a start rule
-        let start_rule = self.rules.pop().unwrap();
-
-        for rule in self.rules.into_iter() {
-            let mut rule_exp = String::with_capacity(rule.len());
-            for symbol in rule {
+        fn expand(gr: &Grammar, id: usize, out: &mut impl Write) -> std::io::Result<()> {
+            for &symbol in gr.rules()[id].iter() {
                 if Grammar::is_terminal(symbol) {
-                    rule_exp.push(symbol as u8 as char)
+                    out.write_all(&[symbol as u8])?;
                 } else {
-                    rule_exp.push_str(expansions[symbol - RULE_OFFSET].as_str())
+                    expand(gr, symbol - RULE_OFFSET, out)?;
+                    //out.write_all(expand[symbol - RULE_OFFSET].as_bytes())?;
                 }
             }
-            expansions.push(rule_exp)
+            Ok(())
         }
 
-        for symbol in start_rule {
-            if Grammar::is_terminal(symbol) {
-                out.write_all(&[symbol as u8])?;
-            } else {
-                out.write_all(expansions[symbol - RULE_OFFSET].as_bytes())?;
-            }
-        }
-
-        Ok(())
+        expand(&self, self.start_rule, &mut out)
     }
 
     pub fn rules(&self) -> &Vec<Vec<usize>> {
@@ -269,17 +255,48 @@ mod test {
         );
     }
 
-
     #[test]
     fn terminal_non_terminal_test() {
-        assert_eq!(true, Grammar::is_nonterminal(260), "symbol 260 not classified as non-terminal");
-        assert_eq!(true, Grammar::is_nonterminal(256), "symbol 256 not classified as non-terminal");
-        assert_eq!(false, Grammar::is_nonterminal(255), "symbol 255 classified as non-terminal");
-        assert_eq!(false, Grammar::is_nonterminal(24), "symbol 224 classified as non-terminal");
+        assert_eq!(
+            true,
+            Grammar::is_nonterminal(260),
+            "symbol 260 not classified as non-terminal"
+        );
+        assert_eq!(
+            true,
+            Grammar::is_nonterminal(256),
+            "symbol 256 not classified as non-terminal"
+        );
+        assert_eq!(
+            false,
+            Grammar::is_nonterminal(255),
+            "symbol 255 classified as non-terminal"
+        );
+        assert_eq!(
+            false,
+            Grammar::is_nonterminal(24),
+            "symbol 224 classified as non-terminal"
+        );
 
-        assert_eq!(false, Grammar::is_terminal(260), "symbol 260 classified as terminal");
-        assert_eq!(false, Grammar::is_terminal(256), "symbol 256 classified as terminal");
-        assert_eq!(true, Grammar::is_terminal(255), "symbol 255 not classified as terminal");
-        assert_eq!(true, Grammar::is_terminal(24), "symbol 24 not classified as terminal");
+        assert_eq!(
+            false,
+            Grammar::is_terminal(260),
+            "symbol 260 classified as terminal"
+        );
+        assert_eq!(
+            false,
+            Grammar::is_terminal(256),
+            "symbol 256 classified as terminal"
+        );
+        assert_eq!(
+            true,
+            Grammar::is_terminal(255),
+            "symbol 255 not classified as terminal"
+        );
+        assert_eq!(
+            true,
+            Grammar::is_terminal(24),
+            "symbol 24 not classified as terminal"
+        );
     }
 }
